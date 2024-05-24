@@ -160,15 +160,8 @@ Build the typescript and package it for distribution
 $ npm run build && npm run package
 ```
 
-Run the tests :heavy_check_mark:  
-```bash
-$ npm test
+Push the changes to your feature branch and wait for the tests to pass :heavy_check_mark:  
 
- PASS  ./index.test.js
-  ✓ test runs (95ms)
-
-...
-```
 
 ## Publish to a distribution branch
 
