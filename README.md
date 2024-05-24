@@ -40,8 +40,7 @@ To use this Action you need to have the following permissions:
 ```yml
 permissions:
   security_events: write
-  repository_contents: read
-  actions: read
+  contents: read
 ```
 
 ### Use with (public-facing) URLs
