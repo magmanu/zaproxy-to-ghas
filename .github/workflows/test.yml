@@ -25,7 +25,9 @@ jobs:
             core.exportVariable('ACTIONS_RESULTS_URL', process.env['ACTIONS_RESULTS_URL'])
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN'])
             core.exportVariable('ACTIONS_RUNTIME_URL', process.env['ACTIONS_RUNTIME_URL'])
-      - run: npm install && npm run all
+      - run: |
+          mv __tests__/report_json.json ./report_json.json
+          npm install && npm run all
   test: # make sure the action works on a clean machine without building
     runs-on: ubuntu-latest
     steps:
