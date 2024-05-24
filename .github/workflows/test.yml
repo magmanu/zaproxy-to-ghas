@@ -21,7 +21,6 @@ jobs:
         run: |
           echo "ACTIONS_RUNTIME_TOKEN=$ACTIONS_RUNTIME_TOKEN" >> "${GITHUB_OUTPUT}"
           echo "ACTIONS_RESULTS_URL=$ACTIONS_RESULTS_URL" >> "${GITHUB_OUTPUT}"
-          EOF
       - run: npm install && npm run all
         env:
           ACTIONS_RUNTIME_TOKEN: ${{ steps.envs.outputs.ACTIONS_RUNTIME_TOKEN }}
