@@ -15,8 +15,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - uses: peaceiris/actions-export-envs@v1.1.0 # https://github.com/actions/toolkit/issues/1053#issuecomment-1859050312
+      - name: Export envs
         id: envs
+        # https://github.com/actions/toolkit/issues/1548
+        run: |
+          cat << EOF >> "${GITHUB_OUTPUT}"
+          ACTIONS_RUNTIME_TOKEN=${ACTIONS_RUNTIME_TOKEN}
+          ACTIONS_RESULTS_URL=${ACTIONS_RESULTS_URL}
+          EOF
       - run: npm install && npm run all
         env:
           ACTIONS_RUNTIME_TOKEN: ${{ steps.envs.outputs.ACTIONS_RUNTIME_TOKEN }}
