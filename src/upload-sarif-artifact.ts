@@ -1,4 +1,4 @@
-import { DefaultArtifactClient } from '@actions/artifact'
+import {DefaultArtifactClient} from '@actions/artifact'
 
 async function uploadSarifArtifact(filename: string): Promise<void> {
   const artifactClient = new DefaultArtifactClient()
@@ -7,11 +7,7 @@ async function uploadSarifArtifact(filename: string): Promise<void> {
 
   const rootDirectory = '.' // Also possible to use __dirname
 
-  await artifactClient.uploadArtifact(
-    artifactName,
-    files,
-    rootDirectory
-  )
+  await artifactClient.uploadArtifact(artifactName, files, rootDirectory)
   return
 }
 
