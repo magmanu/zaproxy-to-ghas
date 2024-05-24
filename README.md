@@ -4,6 +4,17 @@ Use this GitHub Action together with [GitHub Advanced Security](https://github.c
 
 This Action leverages the official [zaproxy/action-baseline](https://github.com/zaproxy/action-baseline) Action which supports various options like [custom rule sets](https://github.com/zaproxy/action-baseline#rules_file_name) and [target url](https://github.com/zaproxy/action-baseline#target). 
 
+## Table of contents
+- [Background](#background)
+- [What is looks like](#what-is-looks-like)
+- [Getting started](#getting-started)
+  - [Required permissions](#required-permissions)
+  - [Use with (public-facing) URLs](#use-with-public-facing-urls)
+  - [Use with containers](#use-with-containers)
+  - [Use with Pull Requests](#use-with-pull-requests)
+- [Development](#development)
+- [Publish to a distribution branch](#publish-to-a-distribution-branch)
+
 ## Background
 GitHub Advanced Security utilizes the [SARIF (Static Analysis Results Interchange) format](https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning) to present code scanning results of a wide range of [static code analysis tools](https://github.blog/2021-07-28-new-code-scanning-integrations-open-source-security-tools/). As DAST scans are not static they can't be directly mapped to individual lines in the original source file but only to a specific URL or endpoint of the application. 
 
@@ -22,6 +33,17 @@ All results that fall under the same rule are captured within a single overview:
 > 💡 Previews are not available as DAST scans can't map a scan result to a specific file in the repository.
 
 ## Getting started
+
+### Required permissions
+To use this Action you need to have the following permissions:
+
+```yml
+permissions:
+  security_events: write
+  repository_contents: read
+  actions: read
+```
+
 ### Use with (public-facing) URLs
 The easiest way to get started is by running this scan against a URL that is publicly available. Or, in case you use self-hosted Action runners, that is available within the network of your runner.
 

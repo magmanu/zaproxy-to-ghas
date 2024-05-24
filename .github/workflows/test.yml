@@ -28,7 +28,23 @@ jobs:
       - run: |
           mv __tests__/report_json.json ./report_json.json
           npm install && npm run all
+  
   test: # make sure the action works on a clean machine without building
     runs-on: ubuntu-latest
+    permissions:
+      # actions: read
+      contents: read
+      security-events: write
     steps:
       - uses: actions/checkout@v4
+
+      - name: Move test report to root
+        run: mv __tests__/report_json.json ./report_json.json
+
+      - name: Create sarif file from zaproxy results
+        uses: magmanu/zaproxy-to-ghas@build/upgrade-artifact
+          
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
