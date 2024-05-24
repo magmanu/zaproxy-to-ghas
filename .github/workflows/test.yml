@@ -5,7 +5,6 @@ on: # rebuild any PRs and main branch changes
     branches:
       - main
       - 'releases/*'
-      - build/upgrade-artifact
 
 jobs:
   build: # make sure build/ci work properly
@@ -35,14 +34,55 @@ jobs:
       # actions: read
       contents: read
       security-events: write
+    env:
+      DYNAMIC_ACTION: ./.dynamic-action
     steps:
       - uses: actions/checkout@v4
 
       - name: Move test report to root
         run: mv __tests__/report_json.json ./report_json.json
 
-      - name: Create sarif file from zaproxy results
-        uses: magmanu/zaproxy-to-ghas@build/upgrade-artifact
+      - name: Define branch to test
+        env:
+          BRANCH: ${{ github.head_ref || github.ref_name }}
+          REPO: ${{ github.repository }}
+        run: 
+          echo "action=$REPO/$BRANCH" >> $GITHUB_ENV
+
+      - name: prepare composite action
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const path = require('path');
+            const fs = require('fs/promises');
+            const dyn = '${{ env.DYNAMIC_ACTION }}';
+            const action = {
+              runs: {
+                using: 'composite',
+                steps: [
+                  {
+                    // clean up dynamically created action
+                    name: 'Cleanup',
+                    uses: `actions/github-script@${{ github.action_ref }}`,
+                    with: {
+                      script: `await io.rmRF('${dyn}')`
+                    }
+                  },
+                  {
+                    name: `Create sarif file from zaproxy results`,
+                    uses: `${{ github.repository }}@${{ github.head_ref || github.ref_name }}`
+                  }
+                ]
+              }
+            };
+            const content = JSON.stringify(action);
+            core.debug(`Writing action:\n${content}\n`);
+            await io.mkdirP(dyn);
+            await fs.writeFile(path.join(dyn, 'action.yml'), content);
+
+      - name: Test action dynamically injecting branch name
+        uses: ./.dynamic-action
+
           
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
