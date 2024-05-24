@@ -15,12 +15,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: |
-          npm install
-      - run: |
-          npm run all
+      - uses: peaceiris/actions-export-envs@v1.1.0 # https://github.com/actions/toolkit/issues/1053#issuecomment-1859050312
+        id: envs
+      - run: npm install && npm run all
         env:
-          ACTIONS_RUNTIME_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ACTIONS_RUNTIME_TOKEN: ${{ steps.envs.outputs.ACTIONS_RUNTIME_TOKEN }}
   test: # make sure the action works on a clean machine without building
     runs-on: ubuntu-latest
     steps:
