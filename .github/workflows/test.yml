@@ -5,17 +5,46 @@ on: # rebuild any PRs and main branch changes
     branches:
       - main
       - 'releases/*'
+      - build/upgrade-artifact
 
 jobs:
   build: # make sure build/ci work properly
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Adding required env vars for caching Docker build
+        # https://github.com/orgs/community/discussions/42856#discussioncomment-7678867
+        uses: actions/github-script@v7
+        env:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          script: |
+            core.exportVariable('ACTIONS_RESULTS_URL', process.env['ACTIONS_RESULTS_URL'])
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN'])
+            core.exportVariable('ACTIONS_RUNTIME_URL', process.env['ACTIONS_RUNTIME_URL'])
       - run: |
-          npm install
-      - run: |
-          npm run all
+          mv __tests__/report_json.json ./report_json.json
+          npm install && npm run all
+  
   test: # make sure the action works on a clean machine without building
     runs-on: ubuntu-latest
+    permissions:
+      # actions: read
+      contents: read
+      security-events: write
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+
+      - name: Move test report to root
+        run: mv __tests__/report_json.json ./report_json.json
+
+      - name: Create sarif file from zaproxy results
+        uses: magmanu/zaproxy-to-ghas@build/upgrade-artifact
+          
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
